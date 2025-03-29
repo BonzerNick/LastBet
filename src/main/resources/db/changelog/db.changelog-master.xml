@@ -7,5 +7,6 @@
 
     <!-- Здесь мы указываем ссылки на миграции -->
     <include file="db/changelog/changeset-001-create-tables.xml" />
+    <include file="db/changelog/changeset-002-user-registration.xml" />
     
 </databaseChangeLog>

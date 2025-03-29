@@ -8,9 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,6 +27,7 @@ public class UserController {
 
     // Эндпоинт для добавления пользователя
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
             summary = "Add a new user",
             description = "Creates and saves a new user with the provided details."
@@ -38,19 +41,21 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // Эндпоинт для поиска пользователя по имени
-    @GetMapping("/{username}")
+    // Эндпоинт для поиска пользователя по email
+    @GetMapping("/{email}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Get user by username",
-            description = "Fetches a user based on the given username parameter."
+            summary = "Get user by email",
+            description = "Fetches a user based on the given email parameter."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found and returned successfully."),
-            @ApiResponse(responseCode = "404", description = "User not found for the given username.")
+            @ApiResponse(responseCode = "404", description = "User not found for the given email.")
     })
-    public ResponseEntity<User> getUserByUsername(
-            @Parameter(description = "The unique username of the user to fetch.") @PathVariable String username) {
-        User user = userService.findByUsername(username);
+    public ResponseEntity<User> getUserByEmail(
+            @Parameter(description = "The unique email of the user to fetch.") @PathVariable String email) {
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found or invalid credentials"));
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -60,6 +65,7 @@ public class UserController {
 
     // Эндпоинт для получения списка всех пользователей
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
             summary = "Get all users",
             description = "Retrieves a list of all users available in the system."
@@ -75,6 +81,7 @@ public class UserController {
 
     // Эндпоинт для обновления пользователя
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
             summary = "Update user by ID",
             description = "Updates the details of an existing user based on the provided ID."
@@ -97,6 +104,7 @@ public class UserController {
 
     // Эндпоинт для удаления пользователя по ID
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
             summary = "Delete user by ID",
             description = "Deletes an existing user based on the provided ID."

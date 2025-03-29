@@ -22,6 +22,9 @@ public class DotenvEnvironmentPostProcessor implements EnvironmentPostProcessor 
         dotenvProperties.put("DB_URL", dotenv.get("DB_URL"));
         dotenvProperties.put("DB_USERNAME", dotenv.get("DB_USERNAME"));
         dotenvProperties.put("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
+        dotenvProperties.put("MAIL_HOST", dotenv.get("MAIL_HOST"));
+        dotenvProperties.put("MAIL_LOGIN", dotenv.get("MAIL_LOGIN"));
+        dotenvProperties.put("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
 
         // Добавляем их в Spring Environment
         environment.getPropertySources().addFirst(

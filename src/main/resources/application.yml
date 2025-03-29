@@ -17,8 +17,25 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
+  mail:
+    host: ${MAIL_HOST}
+    port: 587
+    username: ${MAIL_LOGIN}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger
+
+app:
+  url: http://localhost:8080

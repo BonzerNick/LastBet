@@ -3,6 +3,8 @@ package com.example.casino.service;
 import com.example.casino.model.User;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import com.example.casino.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(userRepository.findByEmail(email).orElse(null));
     }
 
     @Override

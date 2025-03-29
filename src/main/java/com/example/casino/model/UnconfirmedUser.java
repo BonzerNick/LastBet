@@ -11,41 +11,39 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "unconfirmed_users")
+public class UnconfirmedUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private double balance;
+    private Double balance = 0.0;
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "is_2fa", nullable = false)
-    private boolean isTwoFactorAuthEnabled;
+    private boolean isTwoFactorEnabled = false;
 
-    @Column(name = "date", nullable = false)
-    private LocalDateTime date;
 
-    @Column(name = "last_visit")
-    private LocalDateTime lastVisit;
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
 
     @Column(nullable = false)
     private String language;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(50) default 'USER'")
-    private String role;
+    @Column(name = "confirmation_hash", nullable = false, unique = true)
+    private String confirmationHash;
 
 }
