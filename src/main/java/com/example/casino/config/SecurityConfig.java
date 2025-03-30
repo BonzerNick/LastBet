@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/auth/email_registration", "/auth/email_confirm", "/2fa_login").permitAll()// Разрешение
+                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/auth/email_registration", "/auth/email_confirm").permitAll()// Разрешение
                         .anyRequest().authenticated()) // Все остальные запросы требуют аутентификации
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .build();

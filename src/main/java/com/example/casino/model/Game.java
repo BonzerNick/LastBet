@@ -14,7 +14,7 @@ public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -24,5 +24,14 @@ public class Game {
 
     @Column(name = "parameters", columnDefinition = "jsonb")
     private String parameters;
+
+    @Column(name = "bet_time_seconds")
+    private Integer betTimeSeconds;
+
+    @Column(name = "min_bet", nullable = false)
+    private Double minBet;
+
+    @Column(name = "max_bet", nullable = false)
+    private Double maxBet;
 
 }

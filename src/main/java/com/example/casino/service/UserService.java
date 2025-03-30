@@ -15,4 +15,9 @@ public interface UserService {
 
     @Transactional
     User updateUser(Integer id, User updatedUser);
+
+    void increaseBalance(User user, double amount);
+    boolean decreaseBalance(User user, double amount);
+
+    public double getUserBalanceByEmail(String email);
 }

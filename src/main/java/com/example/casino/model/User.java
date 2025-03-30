@@ -48,4 +48,7 @@ public class User {
     @Column(nullable = false, columnDefinition = "VARCHAR(50) default 'USER'")
     private String role;
 
+    @Column(name = "secret_key")
+    private String secretKey;
+
 }

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,13 +18,19 @@ public class BetHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "games_id", nullable = false)
-    private Long gamesId;
+    @Column(name = "game_id", nullable = false)
+    private Integer gameId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "bet", nullable = false)
     private double bet;
+
+    @Column(nullable = false)
+    private Double win;
+
+    @Column(nullable = false)
+    private LocalDateTime date;
 
 }

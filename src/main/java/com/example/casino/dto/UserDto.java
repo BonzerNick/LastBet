@@ -10,6 +10,6 @@ public class UserDto {
     private Boolean is2fa;
     private LocalDateTime lastVisit;
     private String language;
-
-    // Getters and Setters
+    private String role;
+    private String secretKey;
 }

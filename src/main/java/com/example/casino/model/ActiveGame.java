@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -24,9 +26,13 @@ public class ActiveGame {
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = true)
     private LocalDateTime endDate;
 
+    @Column(name = "finished", nullable = false)
+    private Boolean finished;
+
     @Column(name = "parameters", nullable = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String parameters;
 }

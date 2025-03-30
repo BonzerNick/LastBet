@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="014-add-secret_key-column-to-users-table" author="bnz">
+        <addColumn tableName="users">
+            <column name="secret_key" type="VARCHAR(256)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="015-insert-into-games-list" author="bnz">
+        <insert tableName="games_list">
+            <column name="name" value="Слоты 3x3"/>
+            <column name="rules" value="Добро пожаловать в увлекательный мир классических игровых автоматов! В этой игре вас ждет захватывающий азарт вращения барабанов, классические символы и возможность сорвать крупный выигрыш."/>
+            <column name="parameters" value='{
+                "chance_and_coefficient": {
+                    "0": [1, 100.0],
+                    "1": [20, 1.0],
+                    "2": [15, 1.25],
+                    "3": [10, 1.50],
+                    "4": [10, 1.75],
+                    "5": [9, 2.0],
+                    "6": [9, 2.25],
+                    "7": [9, 2.50],
+                    "8": [9, 2.75],
+                    "9": [8, 3.0]
+                }
+            }'/>
+        </insert>
+
+        <insert tableName="games_list">
+            <column name="name" value="Рулетка"/>
+            <column name="rules" value="Колесо вращается, и побеждает случайный игрок. Размер ставки влияет на шанс выигрыша"/>
+            <column name="parameters" value='{}'/>
+        </insert>
+
+        <insert tableName="games_list">
+            <column name="name" value="Ракетка"/>
+            <column name="rules" value="Вы начинаете с ракеты, которая начинает подниматься вверх, и должны обналичить деньги до того, как она остановится, чтобы получить множитель, примененный к вашей ставке. В лучшем случае, когда ракета достигает 1000x, вы выигрываете в 1 000 раз больше, чем рисковали! Рискните в этом захватывающем приключении и получите огромные вознаграждения!"/>
+            <column name="parameters" value='{}'/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

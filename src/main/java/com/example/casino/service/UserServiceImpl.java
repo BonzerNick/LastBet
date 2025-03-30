@@ -45,6 +45,16 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    // Метод для получения баланса пользователя по email
+    public double getUserBalanceByEmail(String email) {
+        // Ищем пользователя в базе данных
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь с email " + email + " не найден"));
+        // Возвращаем баланс
+        return user.getBalance();
+    }
+
 
     @Transactional
     @Override
@@ -63,4 +73,39 @@ public class UserServiceImpl implements UserService {
                 })
                 .orElse(null);
     }
+
+    @Transactional
+    @Override
+    public void increaseBalance(User user, double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Сумма для увеличения баланса должна быть положительной.");
+        }
+        user.setBalance(user.getBalance() + amount); // Увеличиваем баланс
+        userRepository.save(user); // Сохраняем изменения в базе данных
+    }
+
+    @Transactional
+    @Override
+    public boolean decreaseBalance(User user, double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Сумма для уменьшения баланса должна быть положительной.");
+        }
+        if (user.getBalance() >= amount) {
+            user.setBalance(user.getBalance() - amount); // Уменьшаем баланс
+            userRepository.save(user); // Сохраняем изменения в базе данных
+            return true; // Возвращаем true, если баланс успешно уменьшен
+        }
+        return false; // Если недостаточно средств, возвращаем false
+    }
+
+
+//    @Override
+//    public User set2faEnabled(Integer id, User set2faEnabled) {
+//        return userRepository.findById(id)
+//                .map(existingUser -> {
+//                    existingUser.setTwoFactorAuthEnabled(true);
+//                    return userRepository.save(existingUser);
+//                })
+//                .orElse(null);
+//    }
 }

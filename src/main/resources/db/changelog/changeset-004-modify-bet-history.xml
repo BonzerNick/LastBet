@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="016-add-win-and-date-columns-to-bets-history" author="bnz">
+        <addColumn tableName="bets_history">
+            <column name="win" type="FLOAT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="017-replace-end-date-with-end-in-active-games" author="bnz">
+        <dropColumn tableName="active_games" columnName="end_date"/>
+        <addColumn tableName="active_games">
+            <column name="finished" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="018-add-bet-time-min-max-to-games" author="bnz">
+    <addColumn tableName="games_list">
+        <column name="bet_time_seconds" type="INTEGER">
+            <constraints nullable="true" />
+        </column>
+        <column name="min_bet" type="FLOAT8">
+            <constraints nullable="true" />
+        </column>
+        <column name="max_bet" type="FLOAT8">
+            <constraints nullable="true" />
+        </column>
+    </addColumn>
+    </changeSet>
+
+    <changeSet id="019-update-bet-time-min-max" author="bnz">
+        <!-- Заполняем данные для столбцов -->
+        <update tableName="games_list">
+            <column name="min_bet" value="5.0" />
+            <column name="max_bet" value="500.0" />
+            <column name="bet_time_seconds" value="60" />
+            <where>id = 2</where>
+        </update>
+        <update tableName="games_list">
+            <column name="min_bet" value="15.0" />
+            <column name="max_bet" value="300.0" />
+            <column name="bet_time_seconds" value="30" />
+            <where>id = 3</where>
+        </update>
+        <update tableName="games_list">
+            <column name="min_bet" value="10.0" />
+            <column name="max_bet" value="1000.0" />
+            <where>id = 1</where>
+        </update>
+
+        <!-- Устанавливаем ограничение NOT NULL -->
+        <addNotNullConstraint tableName="games_list" columnName="min_bet" columnDataType="FLOAT8" />
+        <addNotNullConstraint tableName="games_list" columnName="max_bet" columnDataType="FLOAT8" />
+    </changeSet>
+
+    <changeSet id="020-add-end-date-to-active-games" author="bnz">
+        <addColumn tableName="active_games">
+            <column name="end_date" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

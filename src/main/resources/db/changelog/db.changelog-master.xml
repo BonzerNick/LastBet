@@ -8,5 +8,7 @@
     <!-- Здесь мы указываем ссылки на миграции -->
     <include file="db/changelog/changeset-001-create-tables.xml" />
     <include file="db/changelog/changeset-002-user-registration.xml" />
+    <include file="db/changelog/changeset-003-2fa-and-games.xml" />
+    <include file="db/changelog/changeset-004-modify-bet-history.xml" />
     
 </databaseChangeLog>

@@ -157,8 +157,8 @@
             <column name="id" type="INTEGER" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" />
             </column>
-            <column name="games_id" type="INTEGER">
-                <constraints nullable="false" foreignKeyName="fk_bets_history_games_id" references="games_list(id)" />
+            <column name="game_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_bets_history_game_id" references="games_list(id)" />
             </column>
             <column name="user_id" type="INTEGER">
                 <constraints nullable="false" foreignKeyName="fk_bets_history_user_id" references="users(id)" />

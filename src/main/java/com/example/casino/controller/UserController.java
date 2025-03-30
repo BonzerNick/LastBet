@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,19 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @GetMapping("/balance")
+    public ResponseEntity<Double> getUserBalance(@AuthenticationPrincipal UserDetails userDetails) {
+        // Извлекаем email авторизованного пользователя
+        String email = userDetails.getUsername();
+
+        // Получаем баланс пользователя из сервисного слоя
+        double balance = userService.getUserBalanceByEmail(email);
+
+        // Возвращаем баланс с кодом 200 OK
+        return ResponseEntity.ok(balance);
+    }
+
 
     // Эндпоинт для добавления пользователя
     @PostMapping

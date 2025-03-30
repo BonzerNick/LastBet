@@ -35,7 +35,7 @@ public class AuthController {
     @Value("${app.url}")
     private String appUrl; // URL приложения
 
-    // 1. Отправка письма со ссылкой на регистрацию
+    // Отправка письма со ссылкой на регистрацию
     @PostMapping("/email_registration")
     public String sendRegistrationEmail(
             @RequestParam String email,
@@ -73,7 +73,7 @@ public class AuthController {
     }
 
 
-    // 2. Ссылка в письме для подтверждения email
+    // Ссылка в письме для подтверждения email
     @GetMapping("/email_confirm")
     public String confirmEmail(@RequestParam String token) {
 
@@ -121,28 +121,5 @@ public class AuthController {
 
         // Возвращаем успешный статус
         return ResponseEntity.ok().build();
-    }
-
-
-
-    // 5. Включение 2FA
-    @PostMapping("/2fa_enable")
-    public String enable2FA(@RequestParam String username) {
-        // Логика включения двухфакторной аутентификации
-        return "2FA enabled for user " + username;
-    }
-
-    // 6. Вход по 2FA
-    @PostMapping("/2fa_login")
-    public String loginWith2FA(@RequestParam String username, @RequestParam String code) {
-        // Логика входа с 2FA
-        return "2FA login successful for user " + username;
-    }
-
-    // 7. Выключение 2FA
-    @PostMapping("/2fa_disenable")
-    public String disable2FA(@RequestParam String username) {
-        // Логика выключения двухфакторной аутентификации
-        return "2FA disabled for user " + username;
     }
 }
