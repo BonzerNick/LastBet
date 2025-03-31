@@ -4,9 +4,12 @@ import com.example.casino.model.User;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.example.casino.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,18 +27,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.ofNullable(userRepository.findByEmail(email).orElse(null));
+        return userRepository.findByEmail(email);
     }
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public User createUser(User user) {
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
         return userRepository.save(user);
     }
 
     @Override
     public List<User> findAllUsers() {
-        return new ArrayList<>();
+        return userRepository.findAll();
     }
 
     @Override
@@ -59,10 +67,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User updateUser(Integer id, User updatedUser) {
+
+        // Шифрование пароля
+        String hashedPassword = passwordEncoder.encode(updatedUser.getPassword());
+
         return userRepository.findById(id)
                 .map(existingUser -> {
                     existingUser.setEmail(updatedUser.getEmail());
-                    existingUser.setPassword(updatedUser.getPassword());
+                    existingUser.setPassword(hashedPassword);
                     existingUser.setBalance(updatedUser.getBalance());
                     existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
                     existingUser.setTwoFactorAuthEnabled(updatedUser.isTwoFactorAuthEnabled());

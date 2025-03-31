@@ -59,7 +59,6 @@
             <where>id = 1</where>
         </update>
 
-        <!-- Устанавливаем ограничение NOT NULL -->
         <addNotNullConstraint tableName="games_list" columnName="min_bet" columnDataType="FLOAT8" />
         <addNotNullConstraint tableName="games_list" columnName="max_bet" columnDataType="FLOAT8" />
     </changeSet>
@@ -68,6 +67,14 @@
         <addColumn tableName="active_games">
             <column name="end_date" type="TIMESTAMP">
                 <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="021-add-date-column-to-games-history" author="bnz">
+        <addColumn tableName="games_history">
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false" />
             </column>
         </addColumn>
     </changeSet>

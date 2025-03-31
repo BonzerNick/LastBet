@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Test</h1>
+<p>Информация об активных играх:</p>
+<div id="active-games"></div>
+
+<script>
+    // Подключение к серверу WebSocket через SockJS
+    const socket = new SockJS('/websocket'); // Эндпоинт из Spring WebSocketConfig
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Подключено: ' + frame);
+
+        // Подписка на сообщения от /topic/active-games
+        stompClient.subscribe('/topic/active-games', function (response) {
+            try {
+                // Парсим данные из тела ответа
+                const activeGames = JSON.parse(response.body);
+                console.log('Получены активные игры:', activeGames);
+
+                // Отображаем данные на странице
+                updateActiveGamesUI(activeGames);
+            } catch (error) {
+                console.error('Ошибка при обработке данных:', error);
+            }
+        });
+    });
+
+    // Функция для отображения списка активных игр на странице
+    function updateActiveGamesUI(activeGames) {
+        const container = document.getElementById('active-games');
+        container.innerHTML = ''; // Очистка старого содержимого
+
+        if (activeGames.length === 0) {
+            // Если список пуст
+            container.innerHTML = '<p>Нет активных игр в данный момент.</p>';
+        } else {
+            // Итерация по полученным данным и отображение каждой игры
+            activeGames.forEach(game => {
+                const gameDiv = document.createElement('div');
+                gameDiv.style.border = '1px solid gray';
+                gameDiv.style.padding = '10px';
+                gameDiv.style.marginBottom = '5px';
+
+                // Форматируем информацию об игре
+                gameDiv.innerHTML = `
+                    <p><strong>ID:</strong> ${game.id}</p>
+                    <p><strong>Game ID:</strong> ${game.gameId}</p>
+                    <p><strong>Start Date:</strong> ${new Date(game.startDate).toLocaleString()}</p>
+                    <p><strong>End Date:</strong> ${game.endDate ? new Date(game.endDate).toLocaleString() : 'In progress'}</p>
+                    <p><strong>Finished:</strong> ${game.finished ? 'Yes' : 'No'}</p>
+                    <p><strong>Parameters:</strong> ${game.parameters}</p>
+                `;
+                container.appendChild(gameDiv);
+            });
+        }
+    }
+</script>
+</body>
+</html>

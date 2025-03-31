@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -25,8 +29,10 @@ public class GameHistory {
      @Column(name = "balance", nullable = false)
      private double balance;
 
-     @Column(name = "parameters", columnDefinition = "jsonb")
+     @Column(name = "parameters", nullable = false, columnDefinition = "jsonb")
+     @JdbcTypeCode(SqlTypes.JSON)
      private String parameters;
 
-
+     @Column(name = "date", nullable = false)
+     private LocalDateTime date;
 }

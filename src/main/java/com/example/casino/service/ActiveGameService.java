@@ -25,6 +25,7 @@
 
        private final ActiveGameRepository activeGameRepository;
        private final BetHistoryRepository betHistoryRepository;
+       private final GameHistoryService gameHistoryService;
        private final UserRepository userRepository;
        private final UserService userService;
        private final GameRepository gameRepository;
@@ -34,12 +35,14 @@
        public ActiveGameService(
                ActiveGameRepository activeGameRepository,
                BetHistoryRepository betHistoryRepository,
+               GameHistoryService gameHistoryService,
                GameRepository gameRepository,
                UserService userService,
                UserRepository userRepository
        ) {
            this.activeGameRepository = activeGameRepository;
            this.betHistoryRepository = betHistoryRepository;
+           this.gameHistoryService = gameHistoryService;
            this.gameRepository = gameRepository;
            this.userService = userService;
            this.userRepository = userRepository;
@@ -222,8 +225,8 @@
        }
 
 
-       // Шедулер, который запускается каждые 10 секунд и проверяет активные игры
-       @Scheduled(fixedDelay = 10000) // Запуск каждые 10 секунд
+       // Шедулер, который запускается каждые 5 секунд и проверяет активные игры
+       @Scheduled(fixedDelay = 5000) // Запуск каждые 5 секунд
        public void processActiveGames() {
            // Находим все незавершённые игры
            List<ActiveGame> activeGames = activeGameRepository.findByFinished(false);
@@ -282,15 +285,16 @@
                }
 
                // Расчёт выигрыша и запись в bets_history
+               Integer winnerId = null;
                for (Map.Entry<String, Double> entry : userBets.entrySet()) {
                    String userEmail = entry.getKey();
                    double userBet = entry.getValue();
 
-                   // Поиск userId через email (по вашей базе данных)
+                   // Поиск userId через email
                    User user = userRepository.findByEmail(userEmail)
                            .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + userEmail));
 
-                   int userId = user.getId(); // Получаем ID пользователя
+                   int userId = user.getId();
 
                    // Вычисляем сумму выигрыша
                    double winAmount = (winnerEmail != null && winnerEmail.equals(userEmail)) ? totalBetSum : 0;
@@ -307,10 +311,22 @@
                    // Увеличиваем баланс победителя
                    if (winAmount > 0) {
                        User winner = userRepository.findById(userId).orElseThrow();
+                       winnerId = userId;
                        winner.setBalance(winner.getBalance() + winAmount);
                        userRepository.save(winner);
                    }
                }
+
+               // Сохранение информации в games_history
+               // Создаём корневой JSON-объект
+               ObjectNode history_parameters = objectMapper.createObjectNode();
+
+               // Добавляем вложенные данные
+               history_parameters.put("winner_id", winnerId); // Пример: добавляем user_id
+               history_parameters.put("bets", bets.toString());
+
+               gameHistoryService.saveGameHistory(2, String.valueOf(totalBetSum), (int) totalBetSum, history_parameters.toString());
+
 
            } catch (Exception e) {
                // Логируем ошибки обработки рулетки
@@ -326,6 +342,11 @@
 
                // Генерация случайного коэффициента
                double crashPoint = generateCrashPoint();
+
+               // Переменные для итоговых значений
+               double[] totalBetSum = {0.0};
+               double[] totalWinSum = {0.0};
+               Map<Integer, Double> winners = new HashMap<>();
 
                // Обрабатываем каждую ставку
                bets.fields().forEachRemaining(entry -> {
@@ -343,6 +364,10 @@
                    // Определение суммы выигрыша
                    double winAmount = userCoef < crashPoint ? userBet * userCoef : 0;
 
+                   // Обновляем итоговые суммы
+                   totalBetSum[0] += userBet;
+                   totalWinSum[0] += winAmount;
+
                    // Записываем результат в bets_history
                    betHistoryRepository.save(new BetHistory(
                            null,
@@ -355,10 +380,23 @@
 
                    // Увеличиваем баланс, если есть выигрыш
                    if (winAmount > 0) {
+                       winners.put(userId, winAmount);
                        user.setBalance(user.getBalance() + winAmount);
                        userRepository.save(user);
                    }
                });
+
+
+               // Сохранение информации в games_history
+               // Создаём корневой JSON-объект
+               ObjectNode history_parameters = objectMapper.createObjectNode();
+
+               // Добавляем вложенные данные
+               history_parameters.put("winners", winners.toString());
+               history_parameters.put("crashPoint", crashPoint);
+               history_parameters.put("bets", bets.toString());
+
+               gameHistoryService.saveGameHistory(3, String.valueOf(totalWinSum[0]), (int) totalBetSum[0], history_parameters.toString());
 
            } catch (Exception e) {
                // Логируем ошибки обработки краша

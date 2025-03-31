@@ -8,6 +8,7 @@ import com.example.casino.repository.GameRepository;
 import com.example.casino.repository.BetHistoryRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,19 +17,22 @@ import java.util.*;
 @Service
 public class SlotsService {
 
-    private final UserService userService; // Сервис для управления пользователями
+    private final UserService userService;
     private final GameRepository gameRepository;
     private final BetHistoryRepository betHistoryRepository;
+    private final GameHistoryService gameHistoryService;
 
     public SlotsService(UserService userService,
                         GameRepository gameRepository,
-                        BetHistoryRepository betHistoryRepository
-    ) {
+                        BetHistoryRepository betHistoryRepository,
+                        GameHistoryService gameHistoryService
+                        ) {
         this.userService = userService;
         this.gameRepository = gameRepository;
         this.betHistoryRepository = betHistoryRepository;
-
+        this.gameHistoryService = gameHistoryService;
     }
+
 
     public SlotsResponseDto playSlots(int bet, String email) {
         // Получаем пользователя и баланс
@@ -99,6 +103,16 @@ public class SlotsService {
         betHistory.setDate(LocalDateTime.now()); // Время игры — текущий момент
 
         betHistoryRepository.save(betHistory);
+
+        // Сохранение информации в games_history
+        // Создаём корневой JSON-объект
+        ObjectNode parameters = objectMapper.createObjectNode();
+
+        // Добавляем вложенные данные
+        parameters.put("user_id", user.getId()); // Пример: добавляем user_id
+        parameters.put("results", results.toString());
+
+        gameHistoryService.saveGameHistory(1, String.valueOf(winnings), bet, parameters.toString());
 
 
         // Если есть выигрыш, добавляем его пользователю

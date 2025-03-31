@@ -76,7 +76,6 @@ public class AuthController {
     // Ссылка в письме для подтверждения email
     @GetMapping("/email_confirm")
     public String confirmEmail(@RequestParam String token) {
-
         // Ищем пользователя по токену в таблице unconfirmed_users
         Optional<UnconfirmedUser> unconfirmedUserOpt = unconfirmedUserRepository.findByConfirmationHash(token);
 
@@ -92,6 +91,7 @@ public class AuthController {
             newUser.setLanguage(unconfirmedUser.getLanguage());
             newUser.setPhoneNumber(unconfirmedUser.getPhoneNumber());
             newUser.setDate(unconfirmedUser.getDate());
+            newUser.setRole("USER");
 
             // Используем UserService для создания пользователя
             userService.createUser(newUser);
