@@ -34,15 +34,15 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Энкодер для работы с паролями
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/auth/**").permitAll()// Разрешение
-                        .anyRequest().authenticated()) // Все остальные запросы требуют аутентификации
+                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/auth/**").permitAll()
+                        .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .build();
     }

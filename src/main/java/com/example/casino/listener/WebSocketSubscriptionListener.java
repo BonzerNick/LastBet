@@ -16,7 +16,7 @@ public class WebSocketSubscriptionListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         // Получаем информацию о канале и сессии
-        String destination = headerAccessor.getDestination(); // Канал подписки (/topic/active-games и др.)
+        String destination = headerAccessor.getDestination();
         String sessionId = headerAccessor.getSessionId();
 
         log.info("Клиент с sessionId={} подписался на канал {}", sessionId, destination);

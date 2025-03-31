@@ -4,8 +4,6 @@ import com.example.casino.model.User;
 import com.example.casino.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,46 +24,35 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(
+            summary = "Получить баланс авторизованного пользователя",
+            description = "Возвращает текущий баланс пользователя, который авторизован в системе."
+    )
     @GetMapping("/balance")
     public ResponseEntity<Double> getUserBalance(@AuthenticationPrincipal UserDetails userDetails) {
-        // Извлекаем email авторизованного пользователя
         String email = userDetails.getUsername();
-
-        // Получаем баланс пользователя из сервисного слоя
         double balance = userService.getUserBalanceByEmail(email);
-
-        // Возвращаем баланс с кодом 200 OK
         return ResponseEntity.ok(balance);
     }
 
 
-    // Эндпоинт для добавления пользователя
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Add a new user",
-            description = "Creates and saves a new user with the provided details."
+            summary = "Добавить нового пользователя",
+            description = "Создать и сохранить нового пользователя на основе предоставленных данных. Доступно только администратору."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User successfully created."),
-            @ApiResponse(responseCode = "400", description = "Bad request. Invalid input data.")
-    })
     public ResponseEntity<User> addUser(@RequestBody User user) {
         User savedUser = userService.createUser(user);
         return ResponseEntity.ok(savedUser);
     }
 
-    // Эндпоинт для поиска пользователя по email
     @GetMapping("/{email}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Get user by email",
-            description = "Fetches a user based on the given email parameter."
+            summary = "Получить пользователя по email",
+            description = "Возвращает информацию о пользователе, соответствующем указанному email. Доступно только администратору."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found and returned successfully."),
-            @ApiResponse(responseCode = "404", description = "User not found for the given email.")
-    })
     public ResponseEntity<User> getUserByEmail(
             @Parameter(description = "The unique email of the user to fetch.") @PathVariable String email) {
         User user = userService.findByEmail(email)
@@ -77,34 +64,24 @@ public class UserController {
         }
     }
 
-    // Эндпоинт для получения списка всех пользователей
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Get all users",
-            description = "Retrieves a list of all users available in the system."
+            summary = "Получить список всех пользователей",
+            description = "Возвращает список всех пользователей, зарегистрированных в системе. Доступно только администратору."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "List of all users returned successfully."),
-            @ApiResponse(responseCode = "500", description = "Internal server error occurred while retrieving users.")
-    })
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    // Эндпоинт для обновления пользователя
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Update user by ID",
-            description = "Updates the details of an existing user based on the provided ID."
+            summary = "Обновить пользователя по ID",
+            description = "Обновляет информацию о существующем пользователе по указанному ID. Доступно только администратору."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User successfully updated."),
-            @ApiResponse(responseCode = "404", description = "User not found for the given ID."),
-            @ApiResponse(responseCode = "400", description = "Bad request. Invalid input data.")
-    })
     public ResponseEntity<User> updateUser(
             @Parameter(description = "The ID of the user to update.", required = true) @PathVariable Integer id,
             @RequestBody User user) {
@@ -116,17 +93,13 @@ public class UserController {
         }
     }
 
-    // Эндпоинт для удаления пользователя по ID
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Delete user by ID",
-            description = "Deletes an existing user based on the provided ID."
+            summary = "Удалить пользователя по ID",
+            description = "Удаляет пользователя из системы по указанному ID. Доступно только администратору."
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User successfully deleted."),
-            @ApiResponse(responseCode = "404", description = "User not found for the given ID.")
-    })
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "The ID of the user to delete.", required = true) @PathVariable Integer id) {
         boolean isDeleted = userService.deleteUserById(id);

@@ -5,6 +5,7 @@ import com.example.casino.model.User;
 import com.example.casino.repository.UnconfirmedUserRepository;
 import com.example.casino.service.EmailService;
 import com.example.casino.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,10 @@ public class AuthController {
     @Value("${app.url}")
     private String appUrl; // URL приложения
 
-    // Отправка письма со ссылкой на регистрацию
+    @Operation(
+            summary = "Регистрация через email",
+            description = "Метод отправляет письмо со ссылкой для завершения регистрации. Требуется указать email, имя пользователя, пароль и язык."
+    )
     @PostMapping("/email_registration")
     public String sendRegistrationEmail(
             @RequestParam String email,
@@ -73,7 +77,10 @@ public class AuthController {
     }
 
 
-    // Ссылка в письме для подтверждения email
+    @Operation(
+            summary = "Подтверждение email",
+            description = "Запрос используется для подтверждения email-адреса с использованием токена"
+    )
     @GetMapping("/email_confirm")
     public String confirmEmail(@RequestParam String token) {
         // Ищем пользователя по токену в таблице unconfirmed_users
@@ -101,12 +108,15 @@ public class AuthController {
 
             return "Email confirmed successfully!";
         } else {
-            // Если пользователь не найден
             return "Invalid or expired confirmation token!";
         }
 
     }
 
+    @Operation(
+            summary = "Выход из системы",
+            description = "Метод завершает сессию текущего пользователя"
+    )
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         // Завершение текущей сессии
@@ -119,7 +129,6 @@ public class AuthController {
         cookie.setMaxAge(0); // Срок жизни cookie - немедленно истекает
         response.addCookie(cookie);
 
-        // Возвращаем успешный статус
         return ResponseEntity.ok().build();
     }
 }

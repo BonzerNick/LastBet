@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface BetHistoryRepository extends JpaRepository<BetHistory, Long> {
-    List<BetHistory> findByUserId(Integer userId); // Найти ставки по user_id
+    List<BetHistory> findByUserId(Integer userId);
 }

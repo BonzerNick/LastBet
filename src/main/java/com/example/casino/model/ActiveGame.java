@@ -26,7 +26,7 @@ public class ActiveGame {
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date", nullable = true)
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
     @Column(name = "finished", nullable = false)

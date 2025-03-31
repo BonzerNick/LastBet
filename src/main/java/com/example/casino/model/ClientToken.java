@@ -19,16 +19,16 @@ public class ClientToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false) // Поле user_id из таблицы
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "token", nullable = false) // Поле token из таблицы
+    @Column(name = "token", nullable = false)
     private String token;
 
-    @Column(name = "iat", nullable = false) // Поле iat из таблицы
+    @Column(name = "iat", nullable = false)
     private LocalDateTime issuedAt;
 
-    @Column(name = "exp", nullable = false) // Поле exp из таблицы
+    @Column(name = "exp", nullable = false)
     private LocalDateTime expirationDate;
 
 }

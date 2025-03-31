@@ -79,7 +79,6 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
-
     // Получение только активных игр
     public List<ActiveGame> getActiveGames() {
         return activeGameRepository.findAll();

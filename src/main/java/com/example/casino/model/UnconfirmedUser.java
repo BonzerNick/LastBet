@@ -36,7 +36,6 @@ public class UnconfirmedUser {
     @Column(name = "is_2fa", nullable = false)
     private boolean isTwoFactorEnabled = false;
 
-
     @Column(nullable = false)
     private LocalDateTime date = LocalDateTime.now();
 

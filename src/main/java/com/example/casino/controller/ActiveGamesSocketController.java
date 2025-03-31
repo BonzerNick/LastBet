@@ -20,19 +20,15 @@ public class ActiveGamesSocketController {
     private final SimpMessagingTemplate messagingTemplate;
 
     // Отправка обновлений об активных играх каждую 1 секунду
-    @Scheduled(fixedRate = 1000) // Запускается каждую 1 секунду
+    @Scheduled(fixedRate = 1000)
     @SendTo("/topic/active-games")
     public Object sendActiveGamesUpdate() {
-        // Получение данных из сервиса
         List<ActiveGame> activeGames = gameService.getActiveGames();
-
         try {
             messagingTemplate.convertAndSend("/topic/active-games", activeGames);
         } catch (Exception e) {
             log.error("Ошибка сериализации JSON: ", e);
         }
-        // Возвращаем данные для WebSocket
         return activeGames;
-
     }
 }

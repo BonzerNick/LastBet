@@ -1,12 +1,10 @@
 package com.example.casino.service;
 
 import com.example.casino.dto.BetHistoryResponseDto;
-import com.example.casino.model.BetHistory;
-import com.example.casino.model.Game;
-import com.example.casino.model.Transaction;
-import com.example.casino.model.User;
+import com.example.casino.model.*;
 import com.example.casino.repository.BetHistoryRepository;
 import com.example.casino.repository.GameRepository;
+import com.example.casino.repository.GameHistoryRepository;
 import com.example.casino.repository.TransactionRepository;
 import com.example.casino.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,7 @@ public class HistoryService {
 
     private final BetHistoryRepository betHistoryRepository;
     private final TransactionRepository transactionRepository;
+    private final GameHistoryRepository gameHistoryRepository;
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
 
@@ -26,11 +25,13 @@ public class HistoryService {
     public HistoryService(
             BetHistoryRepository betHistoryRepository,
             TransactionRepository transactionRepository,
+            GameHistoryRepository gameHistoryRepository,
             UserRepository userRepository,
             GameRepository gameRepository
     ) {
         this.betHistoryRepository = betHistoryRepository;
         this.transactionRepository = transactionRepository;
+        this.gameHistoryRepository = gameHistoryRepository;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
     }
@@ -57,7 +58,6 @@ public class HistoryService {
         }).collect(Collectors.toList());
     }
 
-
     // Получить историю транзакций пользователя по userId
     public List<Transaction> getUserTransactionHistory(Integer userId) {
         return transactionRepository.findByUserId(userId);
@@ -69,5 +69,8 @@ public class HistoryService {
         return user.getId();
     }
 
-
+    public List<GameHistory> getAllGameHistory() {
+        // Возвращаем все записи из таблицы games_history
+        return gameHistoryRepository.findAll();
+    }
 }

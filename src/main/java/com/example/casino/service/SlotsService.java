@@ -22,11 +22,12 @@ public class SlotsService {
     private final BetHistoryRepository betHistoryRepository;
     private final GameHistoryService gameHistoryService;
 
-    public SlotsService(UserService userService,
-                        GameRepository gameRepository,
-                        BetHistoryRepository betHistoryRepository,
-                        GameHistoryService gameHistoryService
-                        ) {
+    public SlotsService(
+            UserService userService,
+            GameRepository gameRepository,
+            BetHistoryRepository betHistoryRepository,
+            GameHistoryService gameHistoryService
+    ){
         this.userService = userService;
         this.gameRepository = gameRepository;
         this.betHistoryRepository = betHistoryRepository;
@@ -35,12 +36,11 @@ public class SlotsService {
 
 
     public SlotsResponseDto playSlots(int bet, String email) {
-        // Получаем пользователя и баланс
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь с таким именем не найден"));
 
         // Получаем данные по игре "Слоты"
-        Game slotsGame = gameRepository.findByName("Слоты 3x3") // предположим, что имя игры - "Слоты 3x3"
+        Game slotsGame = gameRepository.findByName("Слоты 3x3")
                 .orElseThrow(() -> new IllegalArgumentException("Игра Слоты не найдена"));
 
         // Проверка параметров JSON (извлечение min_bet, max_bet, и шанс/коэффициент)
@@ -61,7 +61,6 @@ public class SlotsService {
                     slotsGame.getMinBet(), slotsGame.getMaxBet()
             ));
         }
-
 
         // Проверяем, хватает ли баланса у пользователя
         if (user.getBalance() < bet) {
@@ -88,7 +87,7 @@ public class SlotsService {
         double winnings = 0.0;
         for (List<Integer> row : results) {
             if (row.get(0).equals(row.get(1)) && row.get(1).equals(row.get(2))) {
-                int winningNumber = row.get(0);
+                int winningNumber = row.getFirst();
                 double coefficient = chanceAndCoefficientNode.get(String.valueOf(winningNumber)).get(1).asDouble();
                 winnings += (bet / 3.0) * coefficient;
             }
@@ -98,22 +97,20 @@ public class SlotsService {
         BetHistory betHistory = new BetHistory();
         betHistory.setGameId(slotsGame.getId());
         betHistory.setUserId(user.getId());
-        betHistory.setBet((double) bet);
+        betHistory.setBet(bet);
         betHistory.setWin(winnings);
-        betHistory.setDate(LocalDateTime.now()); // Время игры — текущий момент
+        betHistory.setDate(LocalDateTime.now());
 
         betHistoryRepository.save(betHistory);
 
         // Сохранение информации в games_history
-        // Создаём корневой JSON-объект
         ObjectNode parameters = objectMapper.createObjectNode();
 
         // Добавляем вложенные данные
-        parameters.put("user_id", user.getId()); // Пример: добавляем user_id
+        parameters.put("user_id", user.getId());
         parameters.put("results", results.toString());
 
         gameHistoryService.saveGameHistory(1, String.valueOf(winnings), bet, parameters.toString());
-
 
         // Если есть выигрыш, добавляем его пользователю
         if (winnings > 0) {
@@ -146,7 +143,6 @@ public class SlotsService {
             }
         }
 
-        // На случай, если ничего не сработало (теоретически не должен доходить сюда)
         throw new IllegalStateException("Ошибка при генерации случайного числа");
     }
 }

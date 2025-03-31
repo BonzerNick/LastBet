@@ -18,16 +18,16 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false) // Поле user_id из таблицы
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "datetime", nullable = false) // Поле datetime из таблицы
+    @Column(name = "datetime", nullable = false)
     private LocalDateTime datetime;
 
-    @Column(name = "body", nullable = false) // Поле body из таблицы
+    @Column(name = "body", nullable = false)
     private String body;
 
-    @Column(name = "subject") // Поле subject из таблицы
+    @Column(name = "subject")
     private String subject;
 
 }

@@ -1,6 +1,8 @@
 package com.example.casino.controller;
 
 import com.example.casino.service.ActiveGameService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +18,21 @@ public class ActiveGameController {
         this.activeGameService = activeGameService;
     }
 
-    // Постановка ставки
+    @Operation(
+            summary = "Постановка ставки",
+            description = "Позволяет авторизованному пользователю поставить ставку с указанными параметрами"
+    )
     @PostMapping("/bet")
     public ResponseEntity<String> placeBet(
+            @Parameter(description = "ID активной игры", required = true)
             @RequestParam Integer id,
+            @Parameter(description = "Сумма ставки", required = true)
             @RequestParam Double bet,
+            @Parameter(description = "Коэффициент выигрыша")
             @RequestParam(required = false) Double coef,
-            @AuthenticationPrincipal UserDetails userDetails){ // Получаем авторизованного пользователя
+            @AuthenticationPrincipal
+            @Parameter(hidden = true) UserDetails userDetails
+    ){
         try {
             String email = userDetails.getUsername();
             activeGameService.placeBet(id, bet, coef, email);
@@ -32,11 +42,17 @@ public class ActiveGameController {
         }
     }
 
-    // Отмена ставки
+    @Operation(
+            summary = "Отмена ставки",
+            description = "Позволяет авторизованному пользователю отменить свою ставку"
+    )
     @DeleteMapping("/bet")
     public ResponseEntity<String> cancelBet(
+            @Parameter(description = "ID ставки", required = true)
             @RequestParam Integer id,
-            @AuthenticationPrincipal UserDetails userDetails){ // Получаем авторизованного пользователя)
+            @AuthenticationPrincipal
+            @Parameter(hidden = true) UserDetails userDetails
+    ){
         try {
             String email = userDetails.getUsername();
             activeGameService.cancelBet(id, email);

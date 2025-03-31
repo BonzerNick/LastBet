@@ -33,11 +33,4 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return user.getEmail();
     }
-
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-
 }

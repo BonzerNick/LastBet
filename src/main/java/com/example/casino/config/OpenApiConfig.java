@@ -14,6 +14,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Spring Boot API с Swagger")
                         .version("1.0.0")
-                        .description("Документация для вашего API."));
+                        .description("Документация для API."));
     }
 }

@@ -2,6 +2,7 @@ package com.example.casino.controller;
 
 import com.example.casino.dto.SlotsResponseDto;
 import com.example.casino.service.SlotsService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,22 +21,20 @@ public class SlotsController {
         this.slotsService = slotsService;
     }
 
+    @Operation(
+            summary = "Игра в слоты",
+            description = "Позволяет авторизованному пользователю сделать ставку и сыграть в игровую слот-машину."
+    )
     @PostMapping("/slots")
     public ResponseEntity<?> playSlots(
-            @RequestBody int bet, // Принимаем только число
-            @AuthenticationPrincipal UserDetails userDetails // Получаем авторизованного пользователя
+            @RequestBody int bet,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
         try {
-            // Извлекаем имя пользователя из авторизованной информации
             String email = userDetails.getUsername();
-
-            // Передаем запрос в сервисный слой
             SlotsResponseDto response = slotsService.playSlots(bet, email);
-
-            // Возвращаем результат пользователю (HTTP 200 OK)
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            // Возвращаем ошибку с пояснением (HTTP 400 Bad Request)
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

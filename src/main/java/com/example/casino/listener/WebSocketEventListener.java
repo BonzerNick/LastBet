@@ -19,7 +19,7 @@ public class WebSocketEventListener {
         // Логируем подключение
         log.info("Клиент подключился: sessionId={}, headers={}",
                 headerAccessor.getSessionId(),
-                headerAccessor.getNativeHeader("login")); // Можно получить кастомные заголовки
+                headerAccessor.getNativeHeader("login"));
     }
 
     // Событие отключения клиента

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -14,7 +13,7 @@ public interface ActiveGameRepository extends JpaRepository<ActiveGame, Long> {
     @Query("SELECT ag FROM ActiveGame ag JOIN Game g ON ag.gameId = g.id WHERE g.name = :gameType")
     List<ActiveGame> findActiveGamesByGameType(String gameType);
 
-    // Найти просроченные игры
+    // Найти завершенные игры
     List<ActiveGame> findByFinished(boolean finished);
 
 }

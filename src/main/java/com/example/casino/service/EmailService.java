@@ -16,13 +16,6 @@ public class EmailService {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
-    /**
-     * Отправка письма асинхронно. Если возникнет ошибка, она логируется.
-     *
-     * @param to      Адрес получателя.
-     * @param subject Тема письма.
-     * @param text    Текст сообщения.
-     */
     @Async
     public void sendEmail(String to, String subject, String text) {
         if (!isValidEmail(to)) {
@@ -41,12 +34,6 @@ public class EmailService {
         }
     }
 
-    /**
-     * Проверка валидности email-адреса.
-     *
-     * @param email Адрес электронной почты.
-     * @return true, если адрес валиден; false в противном случае.
-     */
     private boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
     }

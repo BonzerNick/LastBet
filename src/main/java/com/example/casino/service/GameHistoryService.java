@@ -3,11 +3,9 @@ package com.example.casino.service;
 import com.example.casino.model.GameHistory;
 import com.example.casino.repository.GameHistoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class GameHistoryService {
@@ -15,7 +13,10 @@ public class GameHistoryService {
     private final GameHistoryRepository gameHistoryRepository;
     private final ObjectMapper objectMapper;
 
-    public GameHistoryService(GameHistoryRepository gameHistoryRepository, ObjectMapper objectMapper) {
+    public GameHistoryService(
+            GameHistoryRepository gameHistoryRepository,
+            ObjectMapper objectMapper
+    ) {
         this.gameHistoryRepository = gameHistoryRepository;
         this.objectMapper = objectMapper;
     }
