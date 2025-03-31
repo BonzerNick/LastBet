@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- Таблица: users -->
+    <changeSet id="001-create-users-table" author="bnz">
+        <createTable tableName="users">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="false" />
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="balance" type="DOUBLE PRECISION">
+                <constraints nullable="false" />
+            </column>
+            <column name="phone_number" type="VARCHAR(20)" />
+            <column name="is_2fa" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_visit" type="TIMESTAMP" />
+            <column name="language" type="VARCHAR(10)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: logs -->
+    <changeSet id="002-create-logs-table" author="bnz">
+        <createTable tableName="logs">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="datetime" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="author" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="parameters" type="JSONB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: translations -->
+    <changeSet id="003-create-translations-table" author="bnz">
+        <createTable tableName="translations">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="body" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="subject" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="language" type="VARCHAR(10)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: parameters_settings -->
+    <changeSet id="004-create-parameter-settings-table" author="bnz">
+        <createTable tableName="parameters_settings">
+            <column name="parameter_name" type="TEXT">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="value" type="JSONB">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: games_list -->
+    <changeSet id="005-create-game-list-table" author="bnz">
+        <createTable tableName="games_list">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="rules" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="parameters" type="JSONB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: games_history -->
+    <changeSet id="006-create-game-history-table" author="bnz">
+        <createTable tableName="games_history">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="game_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_games_history_game_id" references="games_list(id)" />
+            </column>
+            <column name="result" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="balance" type="DOUBLE PRECISION">
+                <constraints nullable="false" />
+            </column>
+            <column name="parameters" type="JSONB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: active_games -->
+    <changeSet id="007-create-active-games-table" author="bnz">
+        <createTable tableName="active_games">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="game_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_active_games_game_id" references="games_list(id)" />
+            </column>
+            <column name="start_date" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="end_date" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+            <column name="parameters" type="JSONB">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: bets_history -->
+    <changeSet id="008-create-bets-history-table" author="bnz">
+        <createTable tableName="bets_history">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="game_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_bets_history_game_id" references="games_list(id)" />
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_bets_history_user_id" references="users(id)" />
+            </column>
+            <column name="bet" type="DOUBLE PRECISION">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: transactions -->
+    <changeSet id="009-create-transactions-table" author="bnz">
+        <createTable tableName="transactions">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_transactions_user_id" references="users(id)" />
+            </column>
+            <column name="usdt" type="DOUBLE PRECISION">
+                <constraints nullable="false" />
+            </column>
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: clients_tokens -->
+    <changeSet id="010-create-client-tokens-table" author="bnz">
+        <createTable tableName="clients_token">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_clients_tokens_user_id" references="users(id)" />
+            </column>
+            <column name="token" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="iat" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="exp" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Таблица: notifications -->
+    <changeSet id="011-create-notifications-table" author="bnz">
+        <createTable tableName="notifications">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_notifications_user_id" references="users(id)" />
+            </column>
+            <column name="datetime" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="body" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="subject" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

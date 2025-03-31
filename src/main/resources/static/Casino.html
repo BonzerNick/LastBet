@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino API Endpoints</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>Casino API Endpoints</h1>
+
+<!-- Authentication Section -->
+<section>
+    <h2>Authentication</h2>
+    <form id="registrationForm">
+        <h3>Register via Email</h3>
+        <label>Email: <input type="email" id="email" required></label><br>
+        <label>Username: <input type="text" id="username" required></label><br>
+        <label>Password: <input type="password" id="password" required></label><br>
+        <label>Language: <input type="text" id="language" required></label><br>
+        <label>Phone: <input type="text" id="phone"></label><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <form id="confirmEmailForm">
+        <h3>Confirm Email</h3>
+        <label>Token: <input type="text" id="confirmToken" required></label><br>
+        <button type="submit">Confirm</button>
+    </form>
+
+    <form id="logoutForm">
+        <button type="submit">Logout</button>
+    </form>
+</section>
+
+<!-- User Management Section -->
+<section>
+    <h2>Users</h2>
+    <form id="addUserForm">
+        <h3>Add a User</h3>
+        <label>Email: <input type="email" id="addUserEmail" required></label><br>
+        <label>Username: <input type="text" id="addUserName" required></label><br>
+        <label>Password: <input type="password" id="addUserPassword" required></label><br>
+        <button type="submit">Add User</button>
+    </form>
+
+    <form id="getUserByEmailForm">
+        <h3>Get User by Email</h3>
+        <label>Email: <input type="email" id="getUserEmail" required></label><br>
+        <button type="submit">Get User</button>
+    </form>
+
+    <button id="getAllUsers">Get All Users</button>
+
+    <form id="updateUserForm">
+        <h3>Update a User</h3>
+        <label>User ID: <input type="number" id="updateUserId" required></label><br>
+        <label>New Email: <input type="email" id="updateUserEmail"></label><br>
+        <label>New Username: <input type="text" id="updateUserName"></label><br>
+        <label>New Password: <input type="password" id="updateUserPassword"></label><br>
+        <button type="submit">Update User</button>
+    </form>
+
+    <form id="deleteUserForm">
+        <h3>Delete a User</h3>
+        <label>User ID: <input type="number" id="deleteUserId" required></label><br>
+        <button type="submit">Delete User</button>
+    </form>
+</section>
+
+
+<!-- Active Games -->
+<section>
+    <h2>Active Games (WebSocket)</h2>
+    <p>Информация об активных играх:</p>
+    <div id="active-games"></div>
+</section>
+
+
+<!-- Bets Section -->
+<section>
+    <h2>Bets</h2>
+
+    <!-- Добавление ставки -->
+    <form id="placeBetForm">
+        <h3>Place a Bet</h3>
+        <label>Game ID: <input type="number" id="betGameId" required></label><br>
+        <label>Bet Amount: <input type="number" id="betAmount" required></label><br>
+        <label>Coefficient (optional): <input type="number" id="betCoefficient"></label><br>
+        <button type="submit">Place Bet</button>
+    </form>
+    <div id="placeBetResult"></div>
+
+    <!-- Отмена ставки -->
+    <form id="cancelBetForm">
+        <h3>Cancel Bet</h3>
+        <label>Game ID: <input type="number" id="cancelBetGameId" required></label><br>
+        <button type="submit">Cancel Bet</button>
+    </form>
+    <div id="cancelBetResult"></div>
+</section>
+
+<!-- Games Section -->
+<section>
+    <h2>Games</h2>
+    <section>
+        <h2>All Games</h2>
+        <button id="getAllGamesButton">Get All Games</button>
+        <div id="allGamesText"></div>
+    </section>
+
+    <section>
+        <h2>Active Games</h2>
+        <button id="getActiveGamesButton">Get Active Games</button>
+        <div id="activeGamesText"></div>
+    </section>
+
+    <form id="addSlotGameForm">
+        <label>Bet Amount: <input type="number" id="slotGameBet" required></label><br>
+        <button type="submit">Play</button>
+        <div id="slotGameResult"></div>
+    </form>
+
+</section>
+
+
+<!-- History Section -->
+<section>
+    <h2>History</h2>
+
+    <section>
+        <h3>Bet History</h3>
+        <button id="getBetHistoryButton">Get Bet History</button>
+        <div id="betHistoryText"></div>
+    </section>
+
+    <!-- Эндпоинт для истории транзакций -->
+    <section>
+        <h3>Transaction History</h3>
+        <button id="getTransactionHistoryButton">Get Transaction History</button>
+        <div id="transactionHistoryText"></div>
+    </section>
+
+</section>
+
+
+<script>
+    // Authentication
+    document.getElementById('registrationForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.post('/auth/email_registration', {
+            email: document.getElementById('email').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            language: document.getElementById('language').value,
+            phoneNumber: document.getElementById('phone').value
+        })
+        .then(response => alert('Registration successful!'))
+        .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('confirmEmailForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.get('/auth/email_confirm', {
+            params: { token: document.getElementById('confirmToken').value }
+        })
+        .then(response => alert('Email confirmation successful!'))
+        .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('logoutForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.post('/auth/logout')
+            .then(response => alert('Logout successful!'))
+            .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    // User Management
+    document.getElementById('addUserForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.post('/api/users', {
+            email: document.getElementById('addUserEmail').value,
+            username: document.getElementById('addUserName').value,
+            password: document.getElementById('addUserPassword').value
+        })
+        .then(response => alert('User added successfully!'))
+        .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('getAllUsers').onclick = function () {
+        axios.get('/api/users')
+            .then(response => console.log('Users:', response.data))
+            .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('getUserByEmailForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.get(`/api/users/${document.getElementById('getUserEmail').value}`)
+            .then(response => console.log('User:', response.data))
+            .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('updateUserForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.put(`/api/users/${document.getElementById('updateUserId').value}`, {
+            email: document.getElementById('updateUserEmail').value || undefined,
+            username: document.getElementById('updateUserName').value || undefined,
+            password: document.getElementById('updateUserPassword').value || undefined
+        })
+        .then(response => alert('User updated successfully!'))
+        .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('deleteUserForm').onsubmit = function (e) {
+        e.preventDefault();
+        axios.delete(`/api/users/${document.getElementById('deleteUserId').value}`)
+            .then(response => alert('User deleted successfully!'))
+            .catch(error => alert('Error: ' + error.response.data));
+    };
+
+    document.getElementById('addSlotGameForm').onsubmit = async function (e) {
+        e.preventDefault(); // Останавливаем перезагрузку страницы
+
+        const betAmount = parseInt(document.getElementById('slotGameBet').value, 10); // Считываем ставку
+        const resultContainer = document.getElementById('slotGameResult'); // Элемент для отображения результата
+
+        try {
+            // Отправка POST-запроса с JSON-числом
+            const response = await axios.post('/api/games/slots', betAmount, {
+                headers: {
+                    'Content-Type': 'application/json', // Устанавливаем правильный формат данных
+                },
+            });
+
+            // Распаковка данных из ответа
+            const { results, winnings } = response.data;
+
+            let resultsHtml = '<p>Slot Results:</p><table>'; // Создаём таблицу для отображения "слотов"
+            results.forEach((row) => {
+                resultsHtml += '<tr>' + row.map((cell) => `<td>${cell}</td>`).join('') + '</tr>';
+            });
+            resultsHtml += '</table>';
+
+            // Фактическое отображение результатов
+            resultContainer.innerHTML = `
+                ${resultsHtml}
+                <p><strong>Winnings:</strong> ${winnings}</p>
+            `;
+
+        } catch (error) {
+            console.error('Error response:', error.response?.data || error.message);
+
+            // Отображаем ошибку на экране
+            resultContainer.innerHTML = `
+                <p>Error: ${error.response?.data || 'Could not play slots. Please try again later.'}</p>
+            `;
+        }
+    };
+
+    // Обработчик для кнопки "Get All Games"
+    document.getElementById('getAllGamesButton').onclick = async function () {
+        try {
+            // Отправляем GET-запрос на эндпоинт получения списка игр
+            const response = await axios.get('/games/list');
+            const games = response.data;
+
+            // Отображаем список игр
+            const container = document.getElementById('allGamesText');
+            container.innerHTML = games.length
+                ? games.map((game, index) => `
+                    <div style="border:1px solid #ddd; margin:5px; padding:10px;">
+                        <p><strong>Game #${index + 1}:</strong> ${game}</p>
+                    </div>
+                `).join('')
+                : '<p>No games available right now.</p>';
+        } catch (error) {
+            console.error('Error fetching games:', error);
+            document.getElementById('allGamesText').innerHTML = '<p>Error fetching games! Check console for details.</p>';
+        }
+    };
+
+    // Обработчик для добавления ставки
+    document.getElementById('placeBetForm').onsubmit = async function (event) {
+        event.preventDefault(); // Предотвращаем перезагрузку страницы
+
+        const resultContainer = document.getElementById('placeBetResult');
+        resultContainer.innerHTML = "Processing...";
+
+        // Считываем данные из формы
+        const gameId = document.getElementById('betGameId').value;
+        const betAmount = document.getElementById('betAmount').value;
+        const coefficient = document.getElementById('betCoefficient').value;
+
+        try {
+            const response = await axios.post('/active_game/bet', null, {
+                params: {
+                    id: gameId,
+                    bet: betAmount,
+                    coef: coefficient || null, // Если коэффициент не указан, отправляем `null`
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Ответ на постановку ставки:', response.data);
+            resultContainer.innerHTML = `<p style="color: green;">${response.data}</p>`;
+        } catch (error) {
+            console.error("Ошибка при добавлении ставки:", error.response?.data || error.message);
+            resultContainer.innerHTML = `<p style="color: red;">${error.response?.data || error.message}</p>`;
+        }
+    };
+
+    // Обработчик для отмены ставки
+    document.getElementById('cancelBetForm').onsubmit = async function (event) {
+        event.preventDefault(); // Предотвращаем перезагрузку страницы
+
+        const resultContainer = document.getElementById('cancelBetResult');
+        resultContainer.innerHTML = "Processing...";
+
+        // Считываем данные из формы
+        const gameId = document.getElementById('cancelBetGameId').value;
+
+        try {
+            const response = await axios.delete('/active_game/bet', {
+                params: { id: gameId },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Ответ на отмену ставки:', response.data);
+            resultContainer.innerHTML = `<p style="color: green;">${response.data}</p>`;
+        } catch (error) {
+            console.error("Ошибка при отмене ставки:", error.response?.data || error.message);
+            resultContainer.innerHTML = `<p style="color: red;">${error.response?.data || error.message}</p>`;
+        }
+    };
+
+
+    // Обработчик кнопки "Get Active Games"
+    document.getElementById('getActiveGamesButton').onclick = async function () {
+        try {
+            // Отправляем GET-запрос на эндпоинт получения активных игр
+            const response = await axios.get('/games/active');
+            const activeGames = response.data;
+
+            // Отображаем список активных игр
+            const container = document.getElementById('activeGamesText');
+            container.innerHTML = activeGames.length
+                ? activeGames.map(game => `
+                    <div style="border:1px solid #ddd; margin:5px; padding:10px;">
+                        <p><strong>ID:</strong> ${game.id}</p>
+                        <p><strong>Game ID:</strong> ${game.gameId}</p>
+                        <p><strong>Start Date:</strong> ${new Date(game.startDate).toLocaleString()}</p>
+                        <p><strong>End Date:</strong> ${game.endDate ? new Date(game.endDate).toLocaleString() : 'In progress'}</p>
+                        <p><strong>Parameters:</strong> ${game.parameters}</p>
+                        <p><strong>Finished:</strong> ${game.finished ? 'Yes' : 'No'}</p>
+                    </div>
+                `).join('')
+                : '<p>No active games available right now.</p>';
+        } catch (error) {
+            console.error('Error fetching active games:', error);
+            document.getElementById('activeGamesText').innerHTML = '<p>Error fetching active games! Check console for details.</p>';
+        }
+    };
+
+    // History
+    // Обработчик для получения истории ставок
+    document.getElementById('getBetHistoryButton').onclick = async function () {
+        console.log("Fetching Bet History...");
+
+        const resultContainer = document.getElementById('betHistoryText');
+        resultContainer.innerHTML = "Loading...";
+
+        try {
+            // Выполняем GET-запрос на эндпоинт истории ставок
+            const response = await axios.get('/api/history/bets', {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Bet History:', response.data);
+
+            // Выводим данные на страницу
+            const bets = response.data;
+            if (!bets || bets.length === 0) {
+                resultContainer.innerHTML = "No bet history available.";
+            } else {
+                resultContainer.innerHTML = `
+                    <ul>
+                        ${bets.map(bet => `
+                            <li>
+                                <strong>Game:</strong> ${bet.gameName},
+                                <strong>Bet:</strong> ${bet.bet},
+                                <strong>Win:</strong> ${bet.win},
+                                <strong>Date:</strong> ${new Date(bet.date).toLocaleString()}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+        } catch (error) {
+            console.error("Error fetching bet history:", error);
+            resultContainer.innerHTML = `<p style="color: red;">Error loading bet history: ${error.message}</p>`;
+        }
+    };
+
+    // Обработчик для получения истории транзакций
+    document.getElementById('getTransactionHistoryButton').onclick = async function () {
+        console.log("Fetching Transaction History...");
+
+        const resultContainer = document.getElementById('transactionHistoryText');
+        resultContainer.innerHTML = "Loading...";
+
+        try {
+            // Выполняем GET-запрос на эндпоинт истории транзакций
+            const response = await axios.get('/api/history/transactions', {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Transaction History:', response.data);
+
+            // Выводим данные на страницу
+            const transactions = response.data;
+            if (!transactions || transactions.length === 0) {
+                resultContainer.innerHTML = "No transaction history available.";
+            } else {
+                resultContainer.innerHTML = `
+                    <ul>
+                        ${transactions.map(transaction => `
+                            <li>
+                                <strong>Transaction ID:</strong> ${transaction.id},
+                                <strong>Amount:</strong> ${transaction.usdt},
+                                <strong>Date:</strong> ${new Date(transaction.date).toLocaleString()}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+        } catch (error) {
+            console.error("Error fetching transaction history:", error);
+            resultContainer.innerHTML = `<p style="color: red;">Error loading transaction history: ${error.message}</p>`;
+        }
+    };
+
+    // Подключение к серверу WebSocket через SockJS
+    const socket = new SockJS('/websocket'); // Эндпоинт из Spring WebSocketConfig
+    const stompClient = Stomp.over(socket);
+
+    // Соединение с сервером через WebSocket
+    stompClient.connect({}, function (frame) {
+        console.log('Подключено к WebSocket: ' + frame);
+
+        // Подписка на топик /topic/active-games
+        stompClient.subscribe('/topic/active-games', function (response) {
+            try {
+                // Парсим полученные данные
+                const activeGames = JSON.parse(response.body);
+                console.log('Получены активные игры:', activeGames);
+
+                // Обновление интерфейса
+                updateActiveGamesUI(activeGames);
+            } catch (error) {
+                console.error('Ошибка обработки данных:', error);
+            }
+        });
+    });
+
+    // Функция для отображения списка активных игр
+    function updateActiveGamesUI(activeGames) {
+        const container = document.getElementById('active-games');
+        container.innerHTML = ''; // Очистка старого содержимого
+
+        if (activeGames.length === 0) {
+            // Пустой список
+            container.innerHTML = '<p>Нет активных игр в данный момент.</p>';
+        } else {
+            // Отображение игр
+            activeGames.forEach(game => {
+                const gameDiv = document.createElement('div');
+                gameDiv.style.border = '1px solid gray';
+                gameDiv.style.padding = '10px';
+                gameDiv.style.marginBottom = '5px';
+
+                // Форматируем данные об игре
+                gameDiv.innerHTML = `
+                    <p><strong>ID:</strong> ${game.id}</p>
+                    <p><strong>Game ID:</strong> ${game.gameId}</p>
+                    <p><strong>Start Date:</strong> ${new Date(game.startDate).toLocaleString()}</p>
+                    <p><strong>End Date:</strong> ${game.endDate ? new Date(game.endDate).toLocaleString() : 'In progress'}</p>
+                    <p><strong>Finished:</strong> ${game.finished ? 'Yes' : 'No'}</p>
+                    <p><strong>Parameters:</strong> ${game.parameters}</p>
+                `;
+                container.appendChild(gameDiv);
+            });
+        }
+    }
+
+
+</script>
+</body>
+</html>
