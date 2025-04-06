@@ -14,6 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,11 +46,11 @@ public class AuthController {
     )
     @PostMapping("/email_registration")
     public String sendRegistrationEmail(
-            @RequestParam String email,
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam String language,
-            @RequestParam(required = false) String phoneNumber
+            @RequestParam @Email(message = "Email should be valid") String email,
+            @RequestParam @NotBlank(message = "Username is mandatory") @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters") String username,
+            @RequestParam @NotBlank(message = "Password is mandatory") @Size(min = 6, message = "Password must be at least 6 characters") String password,
+            @RequestParam @NotBlank(message = "Language is mandatory") String language,
+            @RequestParam(required = false) @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number should be valid") String phoneNumber
     ) {
         // Генерация уникального хэша
         String confirmationHash = UUID.randomUUID().toString();

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 @RestController
 @RequestMapping("/api/games")
 public class SlotsController {
@@ -27,6 +30,8 @@ public class SlotsController {
     )
     @PostMapping("/slots")
     public ResponseEntity<?> playSlots(
+            @NotNull(message = "Bet amount cannot be null")
+            @Min(value = 1, message = "Bet amount must be greater than 0")
             @RequestBody int bet,
             @AuthenticationPrincipal UserDetails userDetails
     ) {

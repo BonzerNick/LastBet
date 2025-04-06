@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -53,6 +54,7 @@ public class ActiveGameService {
 
    // Шедуллер: запускается каждые 2 секунды
    @Scheduled(fixedRate = 2000)
+   @SchedulerLock(name = "manageControlGames", lockAtMostFor = "2s")
    public void manageActiveGames() {
        // Удалить все игры с истекшим end_date
        cleanEndedGames();
@@ -232,6 +234,7 @@ public class ActiveGameService {
 
    // Шедуллер, который запускается каждые 5 секунд и проверяет активные игры
    @Scheduled(fixedDelay = 5000)
+   @SchedulerLock(name = "manageFinishGames")
    public void processActiveGames() {
        // Находим все незавершённые игры
        List<ActiveGame> activeGames = activeGameRepository.findByFinished(false);
