@@ -1,4 +1,11 @@
 spring:
+  mustache:
+    servlet:
+      expose-request-attributes: true
+    request-context: true
+    prefix: classpath:templates/
+    suffix: .mustache
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -29,7 +36,6 @@ spring:
           starttls:
             enable: true
             required: true
-
 
 springdoc:
   api-docs:

@@ -25,4 +25,7 @@ public interface UserService {
     boolean decreaseBalance(User user, double amount);
 
     public double getUserBalanceByEmail(String email);
+
+    @Transactional
+    User enable2Fa(User user);
 }

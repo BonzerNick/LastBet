@@ -51,4 +51,12 @@ public class User {
     @Column(name = "secret_key")
     private String secretKey;
 
+    public boolean twoFactorEnabled() {
+        return isTwoFactorAuthEnabled;
+    }
+
+    public String twoFactorSecret() {
+        return secretKey;
+    }
+
 }

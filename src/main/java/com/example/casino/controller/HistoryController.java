@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.constraints.Min;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/history")
+@Validated
 public class HistoryController {
 
     private final HistoryService historyService;

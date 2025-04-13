@@ -3,12 +3,14 @@ package com.example.casino.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.validation.annotation.Validated;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Validated
 public class RegistrationRequestDTO {
     @Email(message = "Некорректный email")
     @NotBlank(message = "Email не может быть пустым")

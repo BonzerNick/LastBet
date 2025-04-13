@@ -5,6 +5,7 @@ import com.example.casino.model.User;
 import com.example.casino.repository.UnconfirmedUserRepository;
 import com.example.casino.service.EmailService;
 import com.example.casino.service.UserService;
+import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.constraints.Email;
@@ -23,6 +25,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
+@Validated
 public class AuthController {
 
     @Autowired
@@ -95,6 +98,7 @@ public class AuthController {
             UnconfirmedUser unconfirmedUser = unconfirmedUserOpt.get();
 
             // Создаем нового пользователя для таблицы 'users'
+            String secret = TimeBasedOneTimePasswordUtil.generateBase32Secret();
             User newUser = new User();
             newUser.setUsername(unconfirmedUser.getUsername());
             newUser.setPassword(unconfirmedUser.getPassword());
@@ -102,6 +106,7 @@ public class AuthController {
             newUser.setLanguage(unconfirmedUser.getLanguage());
             newUser.setPhoneNumber(unconfirmedUser.getPhoneNumber());
             newUser.setDate(unconfirmedUser.getDate());
+            newUser.setSecretKey(secret);
             newUser.setRole("USER");
 
             // Используем UserService для создания пользователя
