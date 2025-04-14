@@ -11,5 +11,6 @@
     <include file="db/changelog/changeset-003-2fa-and-games.xml" />
     <include file="db/changelog/changeset-004-modify-bet-history.xml" />
     <include file="db/changelog/changeset-005-shedlock.xml" />
+    <include file="db/changelog/changeset-006-add-reward-fields.xml" />
     
 </databaseChangeLog>
