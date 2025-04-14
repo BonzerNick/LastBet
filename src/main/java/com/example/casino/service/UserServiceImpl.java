@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.casino.repository.UserRepository;
+import com.j256.twofactorauth.TimeBasedOneTimePasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,6 +79,7 @@ public class UserServiceImpl implements UserService {
                     existingUser.setDate(updatedUser.getDate());
                     existingUser.setLastVisit(updatedUser.getLastVisit());
                     existingUser.setLanguage(updatedUser.getLanguage());
+                    existingUser.setSecretKey(TimeBasedOneTimePasswordUtil.generateBase32Secret());
                     return userRepository.save(existingUser);
                 })
                 .orElse(null);
@@ -105,5 +107,12 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    @Override
+    public User enable2Fa(User user) {
+        user.setTwoFactorAuthEnabled(true);
+        return userRepository.save(user);
     }
 }

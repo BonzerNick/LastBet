@@ -51,4 +51,21 @@ public class User {
     @Column(name = "secret_key")
     private String secretKey;
 
+    @Column(name = "last_daily_reward")
+    private LocalDateTime lastDailyReward;
+
+    @Column(name = "last_streak_reward")
+    private LocalDateTime lastStreakReward;
+
+    @Column(name = "streak")
+    private int streak;
+
+    public boolean twoFactorEnabled() {
+        return isTwoFactorAuthEnabled;
+    }
+
+    public String twoFactorSecret() {
+        return secretKey;
+    }
+
 }

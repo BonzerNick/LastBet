@@ -28,6 +28,14 @@ spring:
           auth: true
           starttls:
             enable: true
+            required: true
+
+  mustache:
+    servlet:
+      expose-request-attributes: true
+    request-context: true
+    prefix: /templates/
+    suffix: .mustache
 
 springdoc:
   api-docs:
@@ -37,3 +45,6 @@ springdoc:
 
 app:
   url: http://localhost:8080
+
+server:
+  port: 8080

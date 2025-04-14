@@ -1,6 +1,7 @@
 package com.example.casino.config;
 
 import com.example.casino.model.User;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,10 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(User user){
         this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override

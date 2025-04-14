@@ -60,7 +60,7 @@ class UserServiceTest {
         String username = "test_user";
         String password = "test_password";
         String language = "en";
-        String phoneNumber = "+123456789";
+        String phoneNumber = "+91234567891";
         String confirmationHash = UUID.randomUUID().toString();
 
         try {
@@ -97,9 +97,9 @@ class UserServiceTest {
     public void testAddUser() {
         // Создаем пользователя
         User user = new User();
-        user.setUsername("test_user2");
+        user.setUsername("test_user");
         user.setPassword("password123");
-        user.setEmail("test_user2@example.com");
+        user.setEmail("test_user@example.com");
         user.setBalance(0.0);
         user.setLanguage("en");
         user.setDate(LocalDateTime.now());
@@ -111,7 +111,7 @@ class UserServiceTest {
         // Проверяем, что пользователь успешно добавлен
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isNotNull();
-        assertThat(savedUser.getUsername()).isEqualTo("test_user2");
+        assertThat(savedUser.getUsername()).isEqualTo("test_user");
     }
 
     @Test
@@ -122,9 +122,9 @@ class UserServiceTest {
 
         if (foundUser.isPresent()) {
             User current_user = foundUser.get();
-            assertThat(current_user.getUsername()).isEqualTo("test_user");
+            assertThat(current_user.getUsername()).isEqualTo("test_user2");
         } else {
-            System.out.println("User with email 'find_user' was not found");
+            System.out.println(" ");
         }
 
     }

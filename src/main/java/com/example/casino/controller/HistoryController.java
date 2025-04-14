@@ -8,12 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/history")
+@Validated
 public class HistoryController {
 
     private final HistoryService historyService;
@@ -50,7 +53,9 @@ public class HistoryController {
     )
     @GetMapping("/bets/user/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<BetHistoryResponseDto> getBetHistoryByUserId(@PathVariable Integer userId) {
+    public List<BetHistoryResponseDto> getBetHistoryByUserId(
+            @PathVariable @Min(value = 1, message = "User ID must be greater than 0") Integer userId
+    ) {
         return historyService.getUserBetHistory(userId);
     }
 
@@ -60,7 +65,9 @@ public class HistoryController {
     )
     @GetMapping("/transactions/user/{userId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<Transaction> getTransactionHistoryByUserId(@PathVariable Integer userId) {
+    public List<Transaction> getTransactionHistoryByUserId(
+            @PathVariable @Min(value = 1, message = "User ID must be greater than 0") Integer userId
+    ) {
         return historyService.getUserTransactionHistory(userId);
     }
 
